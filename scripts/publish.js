@@ -108,7 +108,7 @@ const payload = JSON.stringify({
 console.log(`Publishing: ${title}`);
 console.log(`Proxy URL: ${PROXY_URL}`);
 
-const url = new URL(PROXY_URL + '/api/publish');
+const url = new URL('publish', PROXY_URL.replace(/\/?$/, '/'));
 const options = {
   hostname: url.hostname,
   path: url.pathname,
