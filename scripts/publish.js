@@ -1,17 +1,17 @@
 /**
  * GitHub Actions publish script
- * Reads a markdown article, converts to HTML, sends to SCF proxy for WeChat publishing
+ * Reads a markdown article, converts to HTML, sends to EdgeOne proxy for WeChat publishing
  */
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const SCF_URL = process.env.SCF_PROXY_URL;
+const PROXY_URL = process.env.PROXY_URL;
 const APP_ID = process.env.WECHAT_APP_ID;
 const APP_SECRET = process.env.WECHAT_APP_SECRET;
 
-if (!SCF_URL || !APP_ID || !APP_SECRET) {
-  console.error('Missing required environment variables: SCF_PROXY_URL, WECHAT_APP_ID, WECHAT_APP_SECRET');
+if (!PROXY_URL || !APP_ID || !APP_SECRET) {
+  console.error('Missing required environment variables: PROXY_URL, WECHAT_APP_ID, WECHAT_APP_SECRET');
   process.exit(1);
 }
 
@@ -106,9 +106,9 @@ const payload = JSON.stringify({
 });
 
 console.log(`Publishing: ${title}`);
-console.log(`SCF URL: ${SCF_URL}`);
+console.log(`Proxy URL: ${PROXY_URL}`);
 
-const url = new URL(SCF_URL + '/publish');
+const url = new URL(PROXY_URL + '/api/publish');
 const options = {
   hostname: url.hostname,
   path: url.pathname,

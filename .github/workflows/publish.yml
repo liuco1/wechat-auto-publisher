@@ -22,7 +22,7 @@ jobs:
         env:
           WECHAT_APP_ID: ${{ secrets.WECHAT_APP_ID }}
           WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
-          SCF_PROXY_URL: ${{ secrets.SCF_PROXY_URL }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
           echo "Found articles:"
           ls -la articles/ || echo "No articles directory"
