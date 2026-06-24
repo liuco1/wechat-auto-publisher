@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'articles/**.md'
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -17,26 +18,25 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install wenyan-cli
-        run: npm install -g @wenyan-md/cli
-
-      - name: Publish articles to WeChat
+      - name: Publish articles via SCF proxy
         env:
           WECHAT_APP_ID: ${{ secrets.WECHAT_APP_ID }}
           WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
+          SCF_PROXY_URL: ${{ secrets.SCF_PROXY_URL }}
         run: |
           echo "Found articles:"
-          ls -la articles/
+          ls -la articles/ || echo "No articles directory"
+
           for f in articles/*.md; do
             if [ -f "$f" ]; then
               echo "=== Publishing: $f ==="
-              wenyan publish -f "$f" -t lapis -h solarized-light
+              node scripts/publish.js "$f"
               if [ $? -eq 0 ]; then
                 mkdir -p published
                 mv "$f" "published/$(basename $f)"
-                echo "Published successfully: $f"
+                echo "✅ Published: $f"
               else
-                echo "Failed to publish: $f"
+                echo "❌ Failed: $f"
               fi
             fi
           done
