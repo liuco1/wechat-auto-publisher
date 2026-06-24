@@ -108,7 +108,14 @@ const payload = JSON.stringify({
 console.log(`Publishing: ${title}`);
 console.log(`Proxy URL: ${PROXY_URL}`);
 
-const url = new URL('publish', PROXY_URL.replace(/\/?$/, '/'));
+let url;
+try {
+  url = new URL('publish', PROXY_URL.replace(/\/?$/, '/'));
+} catch (e) {
+  console.error(`Invalid PROXY_URL: "${PROXY_URL}" - ${e.message}`);
+  process.exit(1);
+}
+console.log(`Request URL: ${url.href}`);
 const options = {
   hostname: url.hostname,
   path: url.pathname,
