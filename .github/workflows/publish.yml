@@ -24,24 +24,15 @@ jobs:
           WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
-          set -x
           echo "Found articles:"
           ls -la articles/ || echo "No articles directory"
 
           for f in articles/*.md; do
             if [ -f "$f" ]; then
               echo "=== Publishing: $f ==="
-              echo "PROXY_URL=${PROXY_URL}"
-              node scripts/publish.js "$f" 2>&1
-              PUBLISH_EXIT=$?
-              echo "publish.js exit code: ${PUBLISH_EXIT}"
-              if [ $PUBLISH_EXIT -eq 0 ]; then
-                mkdir -p published
-                mv "$f" "published/$(basename $f)"
-                echo "✅ Published: $f"
-              else
-                echo "❌ Failed: $f (exit code: ${PUBLISH_EXIT})"
-              fi
+              echo "PROXY_URL set: ${PROXY_URL:+yes}"
+              echo "APP_ID set: ${WECHAT_APP_ID:+yes}"
+              node scripts/publish.js "$f" || echo "publish.js failed with exit code $?"
             fi
           done
           echo "All done"
