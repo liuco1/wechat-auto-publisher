@@ -1,0 +1,42 @@
+name: Publish to WeChat Official Account
+
+on:
+  push:
+    paths:
+      - 'articles/**.md'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install wenyan-cli
+        run: npm install -g @wenyan-md/cli
+
+      - name: Publish articles to WeChat
+        env:
+          WECHAT_APP_ID: ${{ secrets.WECHAT_APP_ID }}
+          WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
+        run: |
+          echo "Found articles:"
+          ls -la articles/
+          for f in articles/*.md; do
+            if [ -f "$f" ]; then
+              echo "=== Publishing: $f ==="
+              wenyan publish -f "$f" -t lapis -h solarized-light
+              if [ $? -eq 0 ]; then
+                mkdir -p published
+                mv "$f" "published/$(basename $f)"
+                echo "Published successfully: $f"
+              else
+                echo "Failed to publish: $f"
+              fi
+            fi
+          done
