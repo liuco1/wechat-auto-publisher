@@ -24,8 +24,8 @@ jobs:
           WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
-          echo "=== WeChat Auto Publisher ==="
-          echo "PROXY_URL length: ${#PROXY_URL}"
+          echo "=== WeChat Auto Publisher (Direct) ==="
+          echo "Runner public IP: $(curl -s --connect-timeout 5 ifconfig.me 2>/dev/null || echo 'unknown')"
           echo "APP_ID length: ${#WECHAT_APP_ID}"
           echo "APP_SECRET length: ${#WECHAT_APP_SECRET}"
           echo ""
