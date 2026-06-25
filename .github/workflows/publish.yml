@@ -24,15 +24,35 @@ jobs:
           WECHAT_APP_SECRET: ${{ secrets.WECHAT_APP_SECRET }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
+          echo "=== WeChat Auto Publisher ==="
+          echo "PROXY_URL length: ${#PROXY_URL}"
+          echo "APP_ID length: ${#WECHAT_APP_ID}"
+          echo "APP_SECRET length: ${#WECHAT_APP_SECRET}"
+          echo ""
           echo "Found articles:"
-          ls -la articles/ || echo "No articles directory"
+          ls -la articles/ 2>/dev/null || echo "No articles directory"
+          echo ""
 
+          FAILED=0
           for f in articles/*.md; do
             if [ -f "$f" ]; then
-              echo "=== Publishing: $f ==="
-              echo "PROXY_URL set: ${PROXY_URL:+yes}"
-              echo "APP_ID set: ${WECHAT_APP_ID:+yes}"
-              node scripts/publish.js "$f" || echo "publish.js failed with exit code $?"
+              echo "========================================="
+              echo "Publishing: $f"
+              echo "========================================="
+              node scripts/publish.js "$f"
+              EXIT=$?
+              if [ $EXIT -ne 0 ]; then
+                echo "FAILED: $f (exit code: $EXIT)"
+                FAILED=1
+              else
+                echo "SUCCESS: $f"
+              fi
+              echo ""
             fi
           done
-          echo "All done"
+
+          if [ $FAILED -ne 0 ]; then
+            echo "ERROR: Some articles failed!"
+            exit 1
+          fi
+          echo "All published!"
